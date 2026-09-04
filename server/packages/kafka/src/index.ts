@@ -1,12 +1,12 @@
 import { Kafka } from "kafkajs";
 
 // const kafka: Kafka = new Kafka({
-//     clientId: "zolo-kafka",
+//     clientId: "swiftchat-kafka",
 //     brokers: [process.env.KAFKA_BROKERS || "localhost:9092"],
 // });
 
 const kafka = new Kafka({
-  clientId: "zolo-kafka",
+  clientId: "swiftchat-kafka",
   brokers: [process.env.KAFKA_BROKERS!],
 
   ssl: true,

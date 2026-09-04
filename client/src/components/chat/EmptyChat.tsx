@@ -6,7 +6,7 @@ const EmptyChat = () => {
         <div className="text-5xl mb-4">🚀</div>
 
         <h2 className="text-xl font-semibold text-white">
-          Welcome to Zolo
+          Welcome to SwiftChat
         </h2>
 
         <p className="text-sm text-white/70 mt-2">

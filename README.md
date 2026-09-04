@@ -1,4 +1,4 @@
-# 🚀 Zolo – Chat Application 
+# 🚀 SwiftChat – Chat Application 
 
 A scalable, production-ready chat backend built with **Node.js, Express, TypeScript, and MongoDB**, designed using clean architecture principles and industry-standard messaging patterns.
 
@@ -361,8 +361,8 @@ Frontend does **not** access refresh tokens directly.
 
 ## 🏁 Conclusion
 
-Zolo implements an **industry-grade chat architecture** with:
+SwiftChat implements an **industry-grade chat architecture** with:
 
 
 
-👨‍💻 Built as part of the **Zolo Project**
+👨‍💻 Built as part of the **SwiftChat Project**

@@ -1,4 +1,4 @@
-import { prisma } from "@zolo/prisma";
+import { prisma } from "@swiftchat/prisma";
 
 const connectDB = async () => {
     try {

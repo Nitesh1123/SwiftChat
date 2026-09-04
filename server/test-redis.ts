@@ -7,8 +7,8 @@ async function testRedis() {
         
         // 1. Test a basic SET and GET
         console.log("\nTesting Set/Get...");
-        await redis.set("test-zolo-key", "Hello from Upstash!");
-        const value = await redis.get("test-zolo-key");
+        await redis.set("test-swiftchat-key", "Hello from Upstash!");
+        const value = await redis.get("test-swiftchat-key");
         console.log("Value retrieved from Upstash:", value);
         
         if (value === "Hello from Upstash!") {
@@ -18,7 +18,7 @@ async function testRedis() {
         }
 
         // Clean up
-        await redis.del("test-zolo-key");
+        await redis.del("test-swiftchat-key");
         process.exit(0);
 
     } catch (error) {

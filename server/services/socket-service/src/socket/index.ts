@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io"
 import { Server as HttpServer } from "http";
 import { socketAuth } from "./auth";
 import { registerConversationEvents } from "./events/conversation.events";
-import { RedisService, pubClient, subClient, subscribe } from "@zolo/redis";
+import { RedisService, pubClient, subClient, subscribe } from "@swiftchat/redis";
 import { createAdapter } from "@socket.io/redis-adapter";
 interface AuthenticatedSocket extends Socket {
     userId?: string;

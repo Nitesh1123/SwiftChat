@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { SocketMessage } from "@zolo/types";
+import { SocketMessage } from "@swiftchat/types";
 interface AuthenticatedSocket extends Socket {
   data: {
     userId: string;

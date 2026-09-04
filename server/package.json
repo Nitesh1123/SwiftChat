@@ -1,5 +1,5 @@
 {
-  "name": "zolo",
+  "name": "swiftchat",
   "private": true,
   "version": "1.0.0",
   "workspaces": [
@@ -9,7 +9,7 @@
   "scripts": {
     "dev:api": "npm run dev -w api-service",
     "dev:socket": "npm run dev -w socket-service",
-    "dev:consumer": "npm run dev -w @zolo/consumer",
+    "dev:consumer": "npm run dev -w @swiftchat/consumer",
     "dev": "npx --yes concurrently \"npm run dev:api\" \"npm run dev:socket\" \"npm run dev:consumer\"",
     "postinstall": "npx --yes dotenv-cli -e services/api-service/.env -- prisma generate --schema=packages/prisma/schema.prisma"
   },

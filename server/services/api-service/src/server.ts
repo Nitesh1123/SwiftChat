@@ -4,7 +4,7 @@ import http from "http";
 import app from "./app";
 import connectDB from "./config/db";
 
-import { startProducer } from "@zolo/kafka";
+import { startProducer } from "@swiftchat/kafka";
 
 connectDB();
 

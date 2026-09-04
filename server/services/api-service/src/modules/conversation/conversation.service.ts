@@ -1,6 +1,6 @@
-import { prisma } from "@zolo/prisma";
+import { prisma } from "@swiftchat/prisma";
 
-import { RedisService } from "@zolo/redis";
+import { RedisService } from "@swiftchat/redis";
 
 export const formatConversationAsync = async (conversation: any) => {
     const participants = await Promise.all(

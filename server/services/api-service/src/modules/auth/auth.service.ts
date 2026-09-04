@@ -1,7 +1,7 @@
-import { prisma } from "@zolo/prisma";
+import { prisma } from "@swiftchat/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { RedisService } from "@zolo/redis";
+import { RedisService } from "@swiftchat/redis";
 
 export const registerUser = async (
   name: string,

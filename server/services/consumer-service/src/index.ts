@@ -2,9 +2,9 @@ import dotenv from "dotenv";
 import path from "path";
 dotenv.config({ path: path.resolve(__dirname, "../../api-service/.env") });
 
-import { prisma } from "@zolo/prisma";
-import { createConsumer } from "@zolo/kafka";
-import { publishMessage } from "@zolo/redis";
+import { prisma } from "@swiftchat/prisma";
+import { createConsumer } from "@swiftchat/kafka";
+import { publishMessage } from "@swiftchat/redis";
 
 const CONSUMER_GROUP = "chat-consumer-group";
 const TOPIC = "chat-messages";

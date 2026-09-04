@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/authMiddleware";
 import { fetchMessagesService, sendMessageService } from "./message.service";
-import { sendMessage as publishToKafka } from "@zolo/kafka";
+import { sendMessage as publishToKafka } from "@swiftchat/kafka";
 
 export const sendMessage = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

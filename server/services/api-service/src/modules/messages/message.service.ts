@@ -1,4 +1,4 @@
-import { prisma } from "@zolo/prisma";
+import { prisma } from "@swiftchat/prisma";
 import crypto from "crypto";
 
 interface SendMessageType {

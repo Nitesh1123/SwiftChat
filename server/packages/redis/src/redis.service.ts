@@ -1,4 +1,4 @@
-import redis from "@zolo/redis";
+import redis from "@swiftchat/redis";
 
 export const RedisService = {
   async setUserOnline(userId: string) {

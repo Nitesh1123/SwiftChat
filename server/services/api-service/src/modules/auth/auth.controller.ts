@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { loginUser, registerUser } from "./auth.service";
 import jwt from "jsonwebtoken";
-import { prisma } from "@zolo/prisma";
+import { prisma } from "@swiftchat/prisma";
 import { AuthRequest } from "../../middlewares/authMiddleware";
 
 export const registerController = async (

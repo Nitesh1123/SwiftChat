@@ -1,5 +1,5 @@
 {
-  "name": "@zolo/consumer",
+  "name": "@swiftchat/consumer",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.ts",
@@ -15,9 +15,9 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@zolo/kafka": "*",
-    "@zolo/prisma": "*",
-    "@zolo/redis": "*",
+    "@swiftchat/kafka": "*",
+    "@swiftchat/prisma": "*",
+    "@swiftchat/redis": "*",
     "dotenv": "^17.3.1"
   },
   "devDependencies": {
