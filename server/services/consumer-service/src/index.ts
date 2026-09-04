@@ -53,6 +53,11 @@ async function messageHandler(payload: any) {
 }
 
 async function start() {
+    if (!process.env.KAFKA_BROKERS) {
+        console.warn("[Consumer] KAFKA_BROKERS not set - skipping consumer service start.");
+        setInterval(() => {}, 1000 * 60 * 60);
+        return;
+    }
     console.log("🚀 Starting consumer service...");
     await createConsumer(CONSUMER_GROUP, TOPIC, messageHandler);
 }
