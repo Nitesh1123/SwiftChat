@@ -1,0 +1,20 @@
+{
+  "name": "zolo",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w api-service",
+    "dev:socket": "npm run dev -w socket-service",
+    "dev:consumer": "npm run dev -w @zolo/consumer",
+    "dev": "npx --yes concurrently \"npm run dev:api\" \"npm run dev:socket\" \"npm run dev:consumer\"",
+    "postinstall": "npx --yes dotenv-cli -e services/api-service/.env -- prisma generate --schema=packages/prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "pg": "^8.20.0"
+  }
+}

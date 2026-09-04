@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  kafka:
+    restart: always
+    image: confluentinc/confluent-local:7.5.0
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  api-service:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: tsx services/api-service/src/server.ts
+    env_file:
+      - services/api-service/.env
+    environment:
+      - KAFKA_BROKERS=kafka:29092
+      - NODE_OPTIONS=--dns-result-order=ipv4first
+    depends_on:
+      - kafka
+
+  socket-service:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: tsx services/socket-service/src/server.ts
+    env_file:
+      - services/socket-service/.env
+    environment:
+      - KAFKA_BROKERS=kafka:29092
+      - NODE_OPTIONS=--dns-result-order=ipv4first
+      - SOCKET_PORT=8001
+    depends_on:
+      - kafka
+
+  consumer-service:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: tsx services/consumer-service/src/index.ts
+    env_file:
+      - services/consumer-service/.env
+    environment:
+      - KAFKA_BROKERS=kafka:29092
+      - NODE_OPTIONS=--dns-result-order=ipv4first
+    depends_on:
+      - kafka
+
+  client:
+    restart: always
+    build:
+      context: ../client
+      dockerfile: Dockerfile
+
+
+  nginx:
+    restart: always
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api-service
+      - socket-service
+      - client
+
+volumes:
+  kafka_data:

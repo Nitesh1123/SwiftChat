@@ -1,0 +1,60 @@
+﻿
+> client@0.0.0 lint
+> eslint .
+
+
+C:\Users\karti\Backup\Coding Mania\Projects\Zolo\client\src\components\chat\NewConversationBtn.tsx
+  28:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\karti\Backup\Coding Mania\Projects\Zolo\client\src\components\chat\UsernameDialog.tsx
+  40:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\karti\Backup\Coding Mania\Projects\Zolo\client\src\components\ui\button.tsx
+  57:18  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\karti\Backup\Coding Mania\Projects\Zolo\client\src\components\ui\form.tsx
+  170:3  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\karti\Backup\Coding Mania\Projects\Zolo\client\src\context\ConversationProvider.tsx
+  24:14  error  Fast refresh only works when a file only exports components. Move your React context(s) to a separate file  react-refresh/only-export-components
+
+C:\Users\karti\Backup\Coding Mania\Projects\Zolo\client\src\context\UserProvider.tsx
+  12:14  error  Fast refresh only works when a file only exports components. Move your React context(s) to a separate file  react-refresh/only-export-components
+  24:14  error  'err' is defined but never used                                                                             @typescript-eslint/no-unused-vars
+
+C:\Users\karti\Backup\Coding Mania\Projects\Zolo\client\src\pages\Chat.tsx
+  31:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\karti\Backup\Coding Mania\Projects\Zolo\client\src\pages\Chat.tsx:31:13
+  29 |         const askSetUsername = !!user && !user.username;
+  30 |         if (askSetUsername && !usernameDialogOpen) {
+> 31 |             setUsernameDialogOpen(true);
+     |             ^^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  32 |         }
+  33 |     }, [user, usernameDialogOpen]);
+  34 |                                                                     react-hooks/set-state-in-effect
+  43:17  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\karti\Backup\Coding Mania\Projects\Zolo\client\src\pages\Chat.tsx:43:17
+  41 |         if (activeTab === "chats") {
+  42 |             if (selectedConversation) {
+> 43 |                 setIsMobileChatOpen(true);
+     |                 ^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  44 |                 // Lock body scroll when chat is open on mobile
+  45 |                 document.body.style.overflow = "hidden";
+  46 |             } else {  react-hooks/set-state-in-effect
+
+Γ£û 9 problems (9 errors, 0 warnings)
+

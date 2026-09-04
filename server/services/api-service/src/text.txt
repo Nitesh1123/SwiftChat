@@ -1,0 +1,2 @@
+db_user: kartikprajapati5346_db_user
+db_password: NpuuvTqLnkfbObaC

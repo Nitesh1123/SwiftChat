@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────
+// User
+// ─────────────────────────
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  password     String
+  username     String?  @unique
+  avatar       String?
+  refreshToken String?
+  isOnline     Boolean  @default(false)
+  lastSeen     DateTime @default(now())
+  isBlocked    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  participantIn     ConversationParticipant[]
+  adminIn           ConversationAdmin[]
+  sentMessages      Message[]                 @relation("SentMessages")
+  readMessages      MessageReadBy[]
+  conversationReads ConversationRead[]
+
+  @@index([name])
+  @@index([username])
+  @@index([name, username])
+}
+
+// ─────────────────────────
+// Conversation
+// ─────────────────────────
+enum ConversationType {
+  dm
+  group
+}
+
+model Conversation {
+  id            String           @id @default(uuid())
+  name          String?
+  type          ConversationType
+  lastMessageId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lastMessage  Message?                  @relation("LastMessage", fields: [lastMessageId], references: [id])
+  participants ConversationParticipant[]
+  admins       ConversationAdmin[]
+  messages     Message[]                 @relation("ConversationMessages")
+  readStates   ConversationRead[]
+}
+
+// Join table — replaces participants: ObjectId[]
+model ConversationParticipant {
+  conversationId String
+  userId         String
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+}
+
+// Join table — replaces admins: ObjectId[]
+model ConversationAdmin {
+  conversationId String
+  userId         String
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+}
+
+// ─────────────────────────
+// Message
+// ─────────────────────────
+enum MessageType {
+  text
+  image
+  file
+}
+
+model Message {
+  id             String      @id @default(uuid())
+  conversationId String
+  senderId       String
+  content        String
+  type           MessageType @default(text)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  conversation       Conversation  @relation("ConversationMessages", fields: [conversationId], references: [id], onDelete: Cascade)
+  sender             User          @relation("SentMessages", fields: [senderId], references: [id])
+  readBy             MessageReadBy[]
+  lastInConversation Conversation[] @relation("LastMessage")
+
+  @@index([conversationId, createdAt(sort: Desc)])
+}
+
+// Join table — replaces readBy: ObjectId[]
+model MessageReadBy {
+  messageId String
+  userId    String
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([messageId, userId])
+}
+
+// ─────────────────────────
+// ConversationRead
+// ─────────────────────────
+model ConversationRead {
+  id                String   @id @default(uuid())
+  conversationId    String
+  userId            String
+  lastReadMessageId String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+}
