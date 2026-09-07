@@ -48,18 +48,32 @@ export const sendMessageService = async ({
     throw new Error("Not a participant of this conversation");
   }
 
-  const message = {
-    id: crypto.randomUUID(),
-    conversationId,
-    senderId,
-    content,
-    type,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    readBy: [{ userId: senderId }]
-  };
+  const messageId = crypto.randomUUID();
 
-  return formatMessage(message);
+  // Create message in DB directly instead of relying on Kafka
+  const savedMessage = await prisma.message.create({
+    data: {
+      id: messageId,
+      conversationId,
+      senderId,
+      content,
+      type,
+      readBy: {
+        create: [{ userId: senderId }]
+      }
+    },
+    include: {
+      readBy: true
+    }
+  });
+
+  // Update conversation's last message
+  await prisma.conversation.update({
+    where: { id: conversationId },
+    data: { lastMessageId: messageId }
+  });
+
+  return formatMessage(savedMessage);
 };
 
 export const fetchMessagesService = async ({

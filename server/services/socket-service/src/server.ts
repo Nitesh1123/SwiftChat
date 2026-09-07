@@ -8,11 +8,15 @@ import { initSocket } from './socket';
 
 const app: Application = express();
 const server = http.createServer(app);
-const port = process.env.SOCKET_PORT;
+const port = process.env.PORT || process.env.SOCKET_PORT || 8001;
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: [
+      "https://swiftchat-app-nine.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ],
     credentials: true,
   })
 );

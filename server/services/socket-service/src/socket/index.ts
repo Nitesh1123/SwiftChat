@@ -12,7 +12,11 @@ let io: Server;
 export const initSocket = (server: HttpServer) => {
     io = new Server(server, {
         cors: {
-            origin: process.env.CLIENT_URL,
+            origin: [
+                "https://swiftchat-app-nine.vercel.app",
+                "http://localhost:5173",
+                "http://localhost:3000",
+            ],
             credentials: true,
         }
     })

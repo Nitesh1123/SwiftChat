@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/authMiddleware";
 import { fetchMessagesService, sendMessageService } from "./message.service";
 import { sendMessage as publishToKafka } from "@swiftchat/kafka";
+import { publishMessage } from "@swiftchat/redis";
 
 export const sendMessage = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -34,6 +35,19 @@ export const sendMessage = async (req: AuthRequest, res: Response, next: NextFun
     publishToKafka("chat-messages", [{ value: JSON.stringify(message) }])
       .catch(err => console.error("Kafka Async Publish Error:", err));
     console.timeEnd("Kafka_Dispatch_Time");
+
+    // Because Kafka consumer is currently bypassed, we directly publish to Redis so sockets receive it
+    try {
+      const pubPayload = {
+        room: `conversation:${conversationId}`,
+        event: "message:new",
+        data: message
+      };
+      await publishMessage("socket:emit", pubPayload);
+      console.log(`[API] Directly forwarded message to socket bus!`);
+    } catch (err) {
+      console.error("[API] Failed to publish message to Redis:", err);
+    }
 
     return res.status(201).json({
       success: true,
