@@ -2,6 +2,7 @@ import { prisma } from "@swiftchat/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { RedisService } from "@swiftchat/redis";
+import { AppError } from "../../utils/AppError";
 
 export const registerUser = async (
   name: string,
@@ -14,7 +15,7 @@ export const registerUser = async (
   });
 
   if (existingUser) {
-    throw new Error("User already exists");
+    throw new AppError("User already exists", 409);
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -59,12 +60,12 @@ export const loginUser = async (email: string, password: string) => {
   });
 
   if (!user) {
-    throw new Error("Invalid email or password");
+    throw new AppError("Invalid email or password", 401);
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw new Error("Invalid email or password");
+    throw new AppError("Invalid email or password", 401);
   }
 
   const accessToken = jwt.sign(
