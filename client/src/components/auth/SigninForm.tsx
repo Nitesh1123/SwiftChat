@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Eye, EyeOff } from "lucide-react";
 
 import { toast } from "sonner";
 import "@/index.css";
@@ -20,8 +22,10 @@ interface SignInFormProp {
 }
 
 const SigninForm = ({ toggleView }: SignInFormProp) => {
+  const [showPassword, setShowPassword] = useState(false);
   const { setUser } = useUser();
   const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -29,6 +33,7 @@ const SigninForm = ({ toggleView }: SignInFormProp) => {
       password: "",
     },
   });
+
   const onSubmit = async (data: LoginFormValues) => {
     try {
       const res = await loginApi(data);
@@ -44,7 +49,6 @@ const SigninForm = ({ toggleView }: SignInFormProp) => {
       navigate('/chat')
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
-
       toast.error(err.response?.data?.message || "Invalid email or password");
     }
   };
@@ -64,6 +68,7 @@ const SigninForm = ({ toggleView }: SignInFormProp) => {
 
     toast.error("Please fix the errors in the form");
   };
+
   return (
     <Form {...form}>
       <form
@@ -96,10 +101,10 @@ const SigninForm = ({ toggleView }: SignInFormProp) => {
                   <i className="ai-envelope" />
                 </div>
               </FormControl>
-              {/* <FormMessage className="text-xs text-red-400"/> */}
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="password"
@@ -107,22 +112,42 @@ const SigninForm = ({ toggleView }: SignInFormProp) => {
             <FormItem>
               <label>Password</label>
               <FormControl>
-                <div className="control">
+                <div className="control" style={{ position: "relative" }}>
                   <Input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     {...field}
                     placeholder="●●●●●●●●●●●●●●●"
                     className="h-10 w-full bg-transparent border-0 shadow-none
                            focus-visible:ring-0 focus-visible:ring-offset-0
-                           p-0 px-3"
+                           p-0 px-3 pr-10"
                   />
-                  <i className="ai-lock-on" />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    style={{
+                      position: "absolute",
+                      right: "10px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "#aaa",
+                      padding: 0,
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                    tabIndex={-1}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
                 </div>
               </FormControl>
-              {/* <FormMessage className="text-xs text-red-400"/> */}
             </FormItem>
           )}
         />
+
         <button type="submit">Sign in</button>
         <p className="footer">
           By clicking Sign In you agree to our terms and conditions, privacy
