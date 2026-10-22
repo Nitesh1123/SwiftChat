@@ -14,19 +14,17 @@ const navButtons = [
 const CardNav = ({view, toggleView}: CardNavProps) => {
   return (
     <ul
-      className="card-nav"
+      className="auth-tabs"
       style={{ "--bar-position": view === "signin" ? 0 : 1 } as CSSProperties}
     >
-    <li>
-      <span className="active-bar" aria-hidden="true" />
-    </li>
+    <span className="active-bar" aria-hidden="true" />
     {navButtons.map((btn) => (
       <li key={btn.name}>
         <NavButton
           icon={btn.icon}
           label={btn.label}
           isActive={view === btn.name}
-          onClick={toggleView}
+          onClick={() => view !== btn.name && toggleView()}
         />
       </li>
     ))}

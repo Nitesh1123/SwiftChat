@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import type { User } from "@/types/auth.types";
 import NewConversationDialog from "./NewConversationDialog";
 import { createConversation } from "@/api/conversations.ts";
@@ -35,10 +35,12 @@ const NewConversationBtn = () => {
         <>
             <button
                 onClick={() => setOpen(true)}
-                className="absolute bottom-20 lg:bottom-4 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40"
+                className="btn-shu reveal absolute bottom-20 lg:bottom-5 right-5 h-14 w-14 !rounded-2xl z-40 lg:h-12 lg:w-auto lg:px-5"
+                style={{ "--base": "700ms" } as CSSProperties}
                 aria-label="Start new conversation"
             >
-                <Plus className="w-6 h-6 text-white" strokeWidth={2.5} />
+                <Plus className="w-5 h-5" strokeWidth={2.5} />
+                <span className="hidden lg:inline">New chat</span>
             </button>
 
             <NewConversationDialog

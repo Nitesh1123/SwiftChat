@@ -1,15 +1,18 @@
+import type { CSSProperties } from "react";
+import Seal from "@/components/brand/Seal";
+
+const at = (i: number) => ({ "--i": i, "--base": "450ms" }) as CSSProperties;
 
 const EmptyChat = () => {
   return (
-    <div className="flex items-center justify-center h-full px-4">
-      <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-8 text-center shadow-lg max-w-sm w-full">
-        <div className="text-5xl mb-4">🚀</div>
-
-        <h2 className="text-xl font-semibold text-white">
-          Welcome to SwiftChat
+    <div className="flex h-full items-center justify-center px-6">
+      <div className="max-w-md text-center">
+        <Seal size={64} animate delay={350} className="mx-auto" />
+        <p className="reveal eyebrow mt-8" style={at(0)}>Welcome to SwiftChat</p>
+        <h2 className="reveal mt-3 font-display text-5xl leading-[0.95] tracking-tight" style={at(1)}>
+          Nothing on the line <span className="italic text-shu">yet.</span>
         </h2>
-
-        <p className="text-sm text-white/70 mt-2">
+        <p className="reveal mt-4 text-sm text-paper-dim" style={at(2)}>
           Select a conversation to start chatting in real time.
         </p>
       </div>

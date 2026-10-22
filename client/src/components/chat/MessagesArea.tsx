@@ -48,20 +48,24 @@ const MessagesArea = () => {
   }, [messages.length, loading]);
 
   return (
-    <div className={`flex-1 flex flex-col ${isEmpty ? "justify-center items-center" : "justify-end"} overflow-y-auto scrollbar-hide`}>
+    <div className={`flex-1 flex flex-col ${isEmpty ? "justify-center items-center" : ""} overflow-y-auto thin-scroll`}>
       {loading ? (
         <div className="flex items-center justify-center h-full">
-          <div className="text-sm text-muted-foreground">Loading messages...</div>
+          <div className="flex flex-col items-center gap-3">
+            <span className="typing-dots inline-flex gap-1"><span /> <span /> <span /></span>
+            <span className="eyebrow">Loading messages...</span>
+          </div>
         </div>
       ) : (isEmpty ? (
         <EmptyMessages />
       ) : (
-        <div className="flex flex-col gap-1.5 px-3 sm:px-4 py-3 sm:py-4 w-full">
+        <div className="mx-auto mt-auto flex flex-col gap-2 px-3 sm:px-6 py-4 sm:py-6 w-full max-w-4xl">
           {messages.map((msg) => (
             <ChatMessage
               key={(msg as any)._id}
               content={msg.content}
               isOwn={msg.sender === (user?.id || user?._id)}
+              createdAt={msg.createdAt}
             />
           ))}
           <div ref={messagesEndRef} />

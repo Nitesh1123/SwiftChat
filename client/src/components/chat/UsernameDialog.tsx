@@ -2,6 +2,7 @@ import { useUser } from "@/context/useUser";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { setUsername } from "@/api/user";
+import Seal from "@/components/brand/Seal";
 
 interface UsernameDialogProps {
   open: boolean;
@@ -50,8 +51,8 @@ const UsernameDialog = ({ open, setOpen }: UsernameDialogProps) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+      <div
+        className="dialog-backdrop absolute inset-0"
         onClick={(e) => {
           // Prevent closing on backdrop click - username is required
           e.stopPropagation();
@@ -59,27 +60,39 @@ const UsernameDialog = ({ open, setOpen }: UsernameDialogProps) => {
       />
 
       {/* Dialog */}
-      <div className="relative z-10 w-full max-w-md rounded-2xl bg-[#252A31] border border-[#30363D] p-6 sm:p-8 shadow-2xl">
-        <h2 className="text-xl sm:text-2xl font-semibold text-white mb-2">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="username-title"
+        className="dialog-panel relative z-10 w-full max-w-md rounded-3xl p-6 sm:p-8"
+      >
+        <Seal size={44} animate delay={200} />
+        <p className="eyebrow mt-6">One last thing</p>
+        <h2 id="username-title" className="mt-2 mb-2 font-display text-[2.2rem] leading-none">
           Set your username
         </h2>
 
-        <p className="text-sm text-[#8B95A7] mb-6">
+        <p className="text-sm text-paper-dim mb-6">
           This will be visible to other users in chats.
         </p>
 
         <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <input
-              autoFocus
-              type="text"
-              value={username}
-              disabled={loading}
-              onChange={(e) => setUsernameValue(e.target.value)}
-              placeholder="Enter username"
-              className="w-full rounded-lg border border-[#30363D] bg-[#1A1D23] px-4 py-3 text-sm text-[#E5E7EB] placeholder-[#8B95A7] outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-            <p className="mt-2 text-xs text-[#8B95A7]">
+            <div className="relative">
+              <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-[15px] text-shu">
+                @
+              </span>
+              <input
+                autoFocus
+                type="text"
+                value={username}
+                disabled={loading}
+                onChange={(e) => setUsernameValue(e.target.value)}
+                placeholder="Enter username"
+                className="search-input !h-12 !pl-9 font-mono !text-[15px] disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+            </div>
+            <p className="mt-2 font-mono text-[11px] text-paper-faint">
               3–20 characters, letters, numbers, _ or .
             </p>
           </div>
@@ -87,7 +100,7 @@ const UsernameDialog = ({ open, setOpen }: UsernameDialogProps) => {
           <button
             type="submit"
             disabled={loading || !username.trim()}
-            className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 py-3 text-sm font-medium text-white hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
+            className="btn-shu w-full"
           >
             {loading ? "Saving..." : "Save username"}
           </button>

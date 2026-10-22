@@ -5,7 +5,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ['"Schibsted Grotesk"', "ui-sans-serif", "sans-serif"],
+        display: ['"Instrument Serif"', "ui-serif", "Georgia", "serif"],
+        mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -13,6 +15,24 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        ink: {
+          0: "rgb(var(--ink-0) / <alpha-value>)",
+          1: "rgb(var(--ink-1) / <alpha-value>)",
+          2: "rgb(var(--ink-2) / <alpha-value>)",
+          3: "rgb(var(--ink-3) / <alpha-value>)",
+        },
+        paper: {
+          DEFAULT: "rgb(var(--paper) / <alpha-value>)",
+          dim: "rgb(var(--paper-dim) / <alpha-value>)",
+          faint: "rgb(var(--paper-faint) / <alpha-value>)",
+        },
+        shu: {
+          DEFAULT: "rgb(var(--shu) / <alpha-value>)",
+          deep: "rgb(var(--shu-deep) / <alpha-value>)",
+        },
+        sora: "rgb(var(--sora) / <alpha-value>)",
+        matcha: "rgb(var(--matcha) / <alpha-value>)",
+        kaki: "rgb(var(--kaki) / <alpha-value>)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

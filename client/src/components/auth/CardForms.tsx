@@ -1,6 +1,5 @@
 import SignInForm from "./SigninForm";
 import SignupForm from "./SignupForm";
-// import SignUpForm from "./SignUpForm";
 
 interface CardFormsProps {
   view: "signin" | "signup";
@@ -9,20 +8,10 @@ interface CardFormsProps {
 
 const CardForms = ({ view, toggleView }: CardFormsProps) => {
   return (
-    <div className="card-form">
-      <div
-        className="forms"
-        data-view={view}
-        style={{
-          top: view === "signin" ? "0%" : "-100%",
-        }}
-      >
-        {/* Sign In */}
-        <SignInForm toggleView={toggleView}/>
-
-        {/* Sign Up */}
-        <SignupForm toggleView={toggleView}/>
-      </div>
+    <div className="auth-forms" data-view={view}>
+      {/* Both stay mounted so field values survive switching tabs */}
+      <SignInForm toggleView={toggleView} active={view === "signin"} />
+      <SignupForm toggleView={toggleView} active={view === "signup"} />
     </div>
   );
 };
