@@ -1,4 +1,4 @@
-import redis from "@swiftchat/redis";
+import redis from "./index";
 
 export const RedisService = {
   async setUserOnline(userId: string) {
