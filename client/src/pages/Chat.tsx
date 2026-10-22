@@ -66,12 +66,12 @@ const Chat = () => {
     };
 
     return (
-        <div className="main relative h-screen w-screen overflow-hidden">
+        <div className="main atmosphere relative h-dvh w-screen overflow-hidden">
             {/* Username Dialog - Show globally when username is not set */}
             <UsernameDialog open={usernameDialogOpen} setOpen={setUsernameDialogOpen} />
             
             {/* Desktop Layout (≥1024px) */}
-            <div className="hidden lg:grid lg:grid-cols-[60px_1fr] h-full">
+            <div className="hidden lg:grid lg:grid-cols-[76px_1fr] h-full">
                 <Sidebar/>
                 <div className="chat flex overflow-hidden w-full h-full">
                     <ChatList/>
@@ -88,7 +88,7 @@ const Chat = () => {
                         <div
                             className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
                                 isMobileChatOpen ? "-translate-x-full" : "translate-x-0"
-                            } flex flex-col bg-primary z-10`}
+                            } flex flex-col bg-ink-1 z-10`}
                         >
                             <ChatList onChatSelect={() => setIsMobileChatOpen(true)}/>
                         </div>
@@ -97,7 +97,7 @@ const Chat = () => {
                         <div
                             className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
                                 isMobileChatOpen ? "translate-x-0" : "translate-x-full"
-                            } flex flex-col bg-primary z-20`}
+                            } flex flex-col bg-ink-1 z-20`}
                         >
                             <ChatArea onBack={handleBackToChatList}/>
                         </div>
@@ -106,27 +106,33 @@ const Chat = () => {
 
                 {/* Groups Tab Content (Stub) */}
                 {activeTab === "groups" && (
-                    <div className="flex items-center justify-center h-full bg-primary">
-                        <div className="text-center">
-                            <p className="text-white/70">Groups feature coming soon</p>
+                    <div className="flex h-full items-center justify-center px-8">
+                        <div className="reveal text-center">
+                            <p className="eyebrow">{"groups"}</p>
+                            <p className="mt-3 font-display text-4xl leading-none">Coming soon.</p>
+                            <p className="mt-3 text-sm text-paper-dim">{"Groups feature coming soon"}</p>
                         </div>
                     </div>
                 )}
 
                 {/* Status Tab Content (Stub) */}
                 {activeTab === "status" && (
-                    <div className="flex items-center justify-center h-full bg-primary">
-                        <div className="text-center">
-                            <p className="text-white/70">Status feature coming soon</p>
+                    <div className="flex h-full items-center justify-center px-8">
+                        <div className="reveal text-center">
+                            <p className="eyebrow">{"status"}</p>
+                            <p className="mt-3 font-display text-4xl leading-none">Coming soon.</p>
+                            <p className="mt-3 text-sm text-paper-dim">{"Status feature coming soon"}</p>
                         </div>
                     </div>
                 )}
 
                 {/* Settings Tab Content (Stub) */}
                 {activeTab === "settings" && (
-                    <div className="flex items-center justify-center h-full bg-primary">
-                        <div className="text-center">
-                            <p className="text-white/70">Settings feature coming soon</p>
+                    <div className="flex h-full items-center justify-center px-8">
+                        <div className="reveal text-center">
+                            <p className="eyebrow">{"settings"}</p>
+                            <p className="mt-3 font-display text-4xl leading-none">Coming soon.</p>
+                            <p className="mt-3 text-sm text-paper-dim">{"Settings feature coming soon"}</p>
                         </div>
                     </div>
                 )}

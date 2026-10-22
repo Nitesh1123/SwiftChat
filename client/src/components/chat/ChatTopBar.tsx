@@ -1,4 +1,5 @@
-import { ArrowLeft, MoreVertical } from "lucide-react";
+import { ArrowLeft, LogOut, MoreVertical, Phone, Video } from "lucide-react";
+import Avatar from "./Avatar";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useUser } from "@/context/useUser";
 import { useNavigate } from "react-router-dom";
@@ -85,54 +86,67 @@ const ChatTopBar = ({
   }, [handleOnline, handleOffline])
 
   return (
-    <header className="sticky top-0 z-10 flex items-center gap-3 h-[60px] px-4 border-b border-[rgba(255,255,255,0.3)] bg-primary">
+    <header className="sticky top-0 z-10 flex items-center gap-3 h-[68px] px-4 lg:px-6 border-b border-paper/[0.07] bg-ink-1/70 backdrop-blur-md">
       {/* Back button (mobile only) */}
       {onBack && (
         <button
           onClick={onBack}
-          className="lg:hidden p-2 -ml-2 hover:bg-white/10 rounded-full transition-colors"
+          className="lg:hidden p-2 -ml-2 text-paper-dim hover:text-paper hover:bg-paper/5 rounded-xl transition-colors"
           aria-label="Back to chat list"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
       )}
 
-      <div className="chat-img h-[40px] w-[40px] bg-white rounded-md"></div>
+      <Avatar name={conversationName || "?"} size={42} online={participantsCount <= 2 && online} />
 
       <div className="flex-1 min-w-0">
-        <p className="font-medium truncate">{conversationName}</p>
-        <p className="text-xs text-muted-foreground">
-          {participantsCount <= 2
-            ? online ? "Online" : formatLastSeen(lastSeen)
-            : `${participantsCount} members`}
+        <p className="font-display text-[1.45rem] leading-tight truncate">{conversationName}</p>
+        <p className="flex items-center gap-2 font-mono text-[11px] tracking-wide text-paper-faint">
+          {participantsCount <= 2 ? (
+            <>
+              <span className={online ? "online-dot" : "offline-dot"} />
+              <span className={online ? "text-matcha" : ""}>
+                {online ? "Online" : formatLastSeen(lastSeen)}
+              </span>
+            </>
+          ) : (
+            `${participantsCount} members`
+          )}
         </p>
       </div>
 
-      <div className="flex items-center gap-2">
-        <button className="hidden lg:block h-10 w-10 bg-white rounded-full hover:bg-muted" />
-        <button className="hidden lg:block h-10 w-10 bg-white rounded-full hover:bg-muted" />
+      <div className="flex items-center gap-1.5">
+        <div className="hidden lg:flex items-center gap-1.5">
+          <button className="rail-btn" aria-label="Voice call" title="Voice call">
+            <Phone size={18} strokeWidth={1.8} />
+          </button>
+          <button className="rail-btn" aria-label="Video call" title="Video call">
+            <Video size={19} strokeWidth={1.8} />
+          </button>
+        </div>
 
         {/* Profile menu button (mobile) */}
         <div className="lg:hidden relative" ref={menuRef}>
           <button
             onClick={() => setShowProfileMenu(!showProfileMenu)}
-            className="p-2 hover:bg-white/10 rounded-full transition-colors"
+            className="p-2 text-paper-dim hover:text-paper hover:bg-paper/5 rounded-xl transition-colors"
             aria-label="Profile menu"
           >
             <MoreVertical className="w-5 h-5" />
           </button>
 
           {showProfileMenu && (
-            <div className="absolute right-0 top-full mt-2 w-48 bg-[#252A31] border border-[#30363D] rounded-lg shadow-lg overflow-hidden z-50">
-              <div className="px-4 py-3 border-b border-[#30363D]">
-                <p className="text-sm font-medium text-white">{user?.name}</p>
-                <p className="text-xs text-[#8B95A7]">{user?.email}</p>
+            <div className="menu-panel absolute right-0 top-full mt-2 w-56 overflow-hidden z-50">
+              <div className="px-4 py-3 border-b border-paper/[0.08]">
+                <p className="text-sm font-semibold truncate">{user?.name}</p>
+                <p className="font-mono text-[11px] text-paper-faint truncate">{user?.email}</p>
               </div>
               <button
                 onClick={handleLogout}
-                className="w-full px-4 py-3 text-left text-sm text-red-400 hover:bg-white/5 transition-colors"
+                className="flex w-full items-center gap-2.5 px-4 py-3 text-left text-sm text-shu hover:bg-shu/10 transition-colors"
               >
-                Logout
+                <LogOut size={15} /> Logout
               </button>
             </div>
           )}

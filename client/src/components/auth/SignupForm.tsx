@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import "@/styles.css";
 import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, UserRound } from "lucide-react";
 
 import {
   Form,
@@ -21,9 +21,10 @@ import {AxiosError } from "axios";
 
 interface SignUpFormProp {
   toggleView: () => void;
+  active?: boolean;
 }
 
-const SignupForm = ({ toggleView }: SignUpFormProp) => {
+const SignupForm = ({ toggleView, active = true }: SignUpFormProp) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof registerSchema>>({
@@ -78,15 +79,10 @@ const SignupForm = ({ toggleView }: SignUpFormProp) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit, showValidationErrorToast)}
-        className="active"
+        data-active={active}
+        aria-hidden={!active}
         autoComplete="off"
       >
-        <p>
-          Already have an account?{" "}
-          <button type="button" onClick={toggleView} className="btn">
-            Sign in
-          </button>
-        </p>
 
         {/* Name */}
         <FormField
@@ -94,17 +90,15 @@ const SignupForm = ({ toggleView }: SignUpFormProp) => {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel className="field-label">Name</FormLabel>
               <FormControl>
-                <div className="control">
+                <div className="field-control">
+                  <UserRound className="field-icon" />
                   <Input
                     {...field}
-                    placeholder="Name"
-                    className="h-10 w-full bg-transparent border-0 shadow-none
-                               focus-visible:ring-0 focus-visible:ring-offset-0
-                               p-0 px-3"
+                    placeholder="Your full name"
+                    className="field-input"
                   />
-                  <i className="ai-person" />
                 </div>
               </FormControl>
             </FormItem>
@@ -117,17 +111,15 @@ const SignupForm = ({ toggleView }: SignUpFormProp) => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <label>Email</label>
+              <label className="field-label">Email</label>
               <FormControl>
-                <div className="control">
+                <div className="field-control">
+                  <Mail className="field-icon" />
                   <Input
                     {...field}
-                    placeholder="youremail@gmail.com"
-                    className="h-10 w-full bg-transparent border-0 shadow-none
-                               focus-visible:ring-0 focus-visible:ring-offset-0
-                               p-0 px-3"
+                    placeholder="you@example.com"
+                    className="field-input"
                   />
-                  <i className="ai-envelope" />
                 </div>
               </FormControl>
             </FormItem>
@@ -140,33 +132,20 @@ const SignupForm = ({ toggleView }: SignUpFormProp) => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <label>Password</label>
+              <label className="field-label">Password</label>
               <FormControl>
-                <div className="control" style={{ position: "relative" }}>
+                <div className="field-control">
+                  <LockKeyhole className="field-icon" />
                   <Input
                     type={showPassword ? "text" : "password"}
                     {...field}
-                    placeholder="●●●●●●●●●●●●●●●"
-                    className="h-10 w-full bg-transparent border-0 shadow-none
-                               focus-visible:ring-0 focus-visible:ring-offset-0
-                               p-0 px-3 pr-10"
+                    placeholder="••••••••••"
+                    className="field-input pr-12"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      color: "#aaa",
-                      padding: 0,
-                      display: "flex",
-                      alignItems: "center",
-                    }}
+                    className="field-toggle"
                     tabIndex={-1}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
@@ -178,7 +157,16 @@ const SignupForm = ({ toggleView }: SignUpFormProp) => {
           )}
         />
 
-        <button type="submit">SIGN UP</button>
+        <button type="submit" className="btn-shu mt-2">
+          Create account
+          <ArrowRight size={17} strokeWidth={2.2} />
+        </button>
+        <p className="text-center text-[13px] text-paper-dim">
+          Already have an account?{" "}
+          <button type="button" onClick={toggleView} className="btn-link">
+            Sign in
+          </button>
+        </p>
       </form>
     </Form>
   );

@@ -14,7 +14,7 @@ const ChatArea = ({ onBack }: ChatAreaProps) => {
   const { user } = useUser();
 
   return (
-    <div className="bg-primary w-full h-full relative flex flex-col overflow-hidden">
+    <div className="chat-canvas w-full h-full min-w-0 relative flex flex-col overflow-hidden">
 
       {selectedConversation === null ? (
         <>

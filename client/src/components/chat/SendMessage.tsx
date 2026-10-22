@@ -2,6 +2,7 @@ import { sendMessage } from "@/api/messages";
 import { useConversation } from "@/context/useConversation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { SendHorizontal } from "lucide-react";
 
 const SendMessage = () => {
 
@@ -36,25 +37,30 @@ const SendMessage = () => {
 
     return (
         <div
-            className={`sticky bottom-0 w-full flex gap-2 items-center justify-center min-h-[80px] px-4 py-4 bg-primary z-30 border-t border-[rgba(255,255,255,0.08)] lg:border-t-0 send-message-container`}
+            className={`sticky bottom-0 w-full px-3 sm:px-6 pt-3 z-30 border-t border-paper/[0.06] bg-ink-1/60 backdrop-blur-md lg:border-t-0 lg:bg-transparent lg:backdrop-blur-none send-message-container`}
         >
-            <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                className="max-w-3xl w-full bg-[#252A31] text-[#E5E7EB] placeholder-[#8B95A7] border border-[#30363D] rounded-lg
-    px-3 py-2 shadow-[inset_0_1px_1px_rgba(255,255,255,0.04)] focus:outline-none focus:ring-2 focus:ring-primary/40"
-                placeholder="Type a message..."
-            />
-            <button
-                onClick={handleSend}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg
-            hover:bg-blue-600/90 transition disabled:opacity-50 whitespace-nowrap"
-                disabled={!message.trim()}
-            >
-                Send
-            </button>
+            <div className="composer mx-auto flex max-w-4xl items-center gap-2 p-1.5 pl-4">
+                <input
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                    className="h-10 min-w-0 flex-1 bg-transparent text-[15px] text-paper placeholder:text-paper-faint outline-none"
+                    placeholder="Type a message..."
+                />
+                <button
+                    onClick={handleSend}
+                    className="btn-shu h-10 w-10 shrink-0 !rounded-[11px] sm:w-auto sm:px-4"
+                    disabled={!message.trim()}
+                    aria-label="Send"
+                >
+                    <span className="hidden sm:inline text-sm">Send</span>
+                    <SendHorizontal size={17} strokeWidth={2.2} />
+                </button>
+            </div>
+            <p className="mx-auto mt-2 hidden max-w-4xl px-1 font-mono text-[10px] tracking-wide text-paper-faint lg:block">
+                Enter to send
+            </p>
         </div>
     );
 };
