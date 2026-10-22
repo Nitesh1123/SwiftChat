@@ -1,12 +1,10 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 
-let base = import.meta.env.VITE_API_BASE_URL as string;
-if (base && !base.endsWith('/api')) {
-    base = base.replace(/\/$/, '') + '/api';
-}
-
+// Same-origin on purpose: vercel.json (prod) and the Vite dev proxy forward
+// /api to the backend. Calling the backend's own domain directly makes the
+// auth cookies third-party, and most browsers now refuse to store or send them.
 const api = axios.create({
-    baseURL: base,
+    baseURL: "/api",
     withCredentials: true
 })
 
