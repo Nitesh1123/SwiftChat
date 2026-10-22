@@ -188,6 +188,22 @@ export const logoutController = async (
     }
 };
 
+// The socket service lives on a different host, so it never sees the
+// httpOnly accessToken cookie. Hand the client a short-lived token to pass
+// in the socket.io handshake instead.
+export const getSocketToken = (
+    req: AuthRequest,
+    res: Response
+) => {
+    const token = jwt.sign(
+        { id: req.userId },
+        process.env.ACCESS_TOKEN_SECRET as string,
+        { expiresIn: "5m" }
+    );
+
+    return res.status(200).json({ success: true, token });
+};
+
 export const getMyProfile = async (
     req: AuthRequest,
     res: Response,
