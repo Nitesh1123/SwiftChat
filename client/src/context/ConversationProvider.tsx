@@ -3,6 +3,7 @@ import type { Conversation } from "@/types/conversation.types";
 import type { MessageResponse } from "@/types/message.types";
 import {
   createContext,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -19,6 +20,7 @@ interface ConversationContextType {
   setSelectedConversation: (conversation: Conversation | null) => void;
   messages: MessageResponse[];
   setMessages: Dispatch<SetStateAction<MessageResponse[]>>;
+  receiveMessage: (message: MessageResponse) => void;
 }
 
 export const ConversationContext =
@@ -70,23 +72,50 @@ export const ConversationProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [selectedConversation]);
 
-  // Registered once — uses ref to always read the latest selected conversation
-  useEffect(() => {
-    const handleNewMessage = (message: MessageResponse) => {
-      if (message.conversationId !== selectedConversationRef.current?._id) return;
-
+  // Single entry point for a message, whether it came back from our own send
+  // request or arrived over the socket. Deduped by id, since both can happen.
+  const receiveMessage = useCallback((message: MessageResponse) => {
+    if (message.conversationId === selectedConversationRef.current?._id) {
       setMessages((prev) => {
         if (prev.some((m) => m.id === message.id)) return prev;
         return [...prev, message];
       });
-    };
+    }
 
-    socket.on("message:new", handleNewMessage);
+    // Keep the conversation list preview current and float it to the top.
+    setConversations((prev) => {
+      const index = prev.findIndex((c) => c._id === message.conversationId);
+      if (index === -1 || prev[index].lastMessage?._id === message.id) return prev;
+      const convo = prev[index];
+      const sender =
+        convo.participants.find((p) => p._id === message.sender) ??
+        { _id: message.sender, name: "", avatar: "" };
+      const updated: Conversation = {
+        ...convo,
+        lastMessage: { ...message, _id: message.id, sender },
+        updatedAt: message.createdAt,
+      };
+      return [updated, ...prev.slice(0, index), ...prev.slice(index + 1)];
+    });
+  }, []);
+
+  // Registered once — receiveMessage reads the selected conversation from a ref
+  useEffect(() => {
+    socket.on("message:new", receiveMessage);
+
+    // Rooms are per-connection on the server, so rejoin after any reconnect
+    // (Render restarts, cold starts, flaky networks).
+    const rejoin = () => {
+      const id = selectedConversationRef.current?._id;
+      if (id) socket.emit("conversation:join", id);
+    };
+    socket.on("connect", rejoin);
 
     return () => {
-      socket.off("message:new", handleNewMessage);
+      socket.off("message:new", receiveMessage);
+      socket.off("connect", rejoin);
     };
-  }, []); // ✅ empty deps — registers exactly once, no re-registration on conversation switch
+  }, [receiveMessage]);
 
   return (
     <ConversationContext.Provider
@@ -98,6 +127,7 @@ export const ConversationProvider = ({ children }: { children: ReactNode }) => {
         setSelectedConversation,
         messages,
         setMessages,
+        receiveMessage,
       }}
     >
       {children}
