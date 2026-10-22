@@ -1,5 +1,5 @@
 import type { Server, Socket } from "socket.io";
-import { prisma } from "../lib/prisma";
+import { prisma } from "@swiftchat/prisma";
 
 type Ack = (res: { ok: boolean; error?: string }) => void;
 
