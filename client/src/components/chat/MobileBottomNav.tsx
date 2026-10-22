@@ -16,7 +16,7 @@ const MobileBottomNav = ({ activeTab, onTabChange }: MobileBottomNavProps) => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-primary border-t border-[rgba(255,255,255,0.08)] safe-area-bottom backdrop-blur-sm">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-ink-0/85 border-t border-paper/[0.08] safe-area-bottom backdrop-blur-md">
       <div className="flex items-center justify-around h-16 px-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -26,21 +26,22 @@ const MobileBottomNav = ({ activeTab, onTabChange }: MobileBottomNavProps) => {
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${
+              className={`relative flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${
                 isActive
-                  ? "text-blue-500"
-                  : "text-[#8B95A7] hover:text-[#E5E7EB]"
+                  ? "text-paper"
+                  : "text-paper-faint hover:text-paper-dim"
               }`}
               aria-label={tab.label}
             >
+              {isActive && (
+                <span className="absolute top-0 h-[3px] w-8 rounded-b-full bg-shu" />
+              )}
               <Icon
-                className={`w-6 h-6 transition-transform ${
-                  isActive ? "scale-110" : ""
-                }`}
+                className={`w-[22px] h-[22px] ${isActive ? "text-shu" : ""}`}
                 strokeWidth={isActive ? 2.5 : 2}
               />
               <span
-                className={`text-xs font-medium transition-all ${
+                className={`font-mono text-[10px] uppercase tracking-[0.12em] ${
                   isActive ? "opacity-100" : "opacity-70"
                 }`}
               >

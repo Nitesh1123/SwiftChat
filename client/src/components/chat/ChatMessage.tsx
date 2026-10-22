@@ -1,23 +1,36 @@
 interface ChatMessageProp {
   content: string;
   isOwn: boolean;
+  createdAt?: string;
 }
 
-const ChatMessage = ({ content, isOwn }: ChatMessageProp) => {
+const formatTime = (iso?: string) => {
+  if (!iso) return "";
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime())
+    ? ""
+    : date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+};
+
+const ChatMessage = ({ content, isOwn, createdAt }: ChatMessageProp) => {
+  const time = formatTime(createdAt);
   return (
     <div
-      className={`flex w-full ${
-        isOwn ? "justify-end pl-8 sm:pl-12 lg:pl-16" : "justify-start pr-8 sm:pr-12 lg:pr-16"
+      className={`msg-in flex w-full ${
+        isOwn ? "justify-end pl-10 sm:pl-16 lg:pl-24" : "justify-start pr-10 sm:pr-16 lg:pr-24"
       }`}
     >
-      <div
-        className={`max-w-[80%] sm:max-w-[70%] lg:max-w-[65%] px-3 py-2 rounded-2xl text-sm break-words shadow-sm ${
-          isOwn
-            ? "bg-blue-600 text-white rounded-br-md"
-            : "bg-[#252A31] text-[#E5E7EB] rounded-bl-md border border-[#30363D]"
-        }`}
-      >
-        <p className="whitespace-pre-wrap leading-relaxed">{content}</p>
+      <div className={`bubble max-w-[85%] sm:max-w-[72%] lg:max-w-[62%] ${isOwn ? "bubble-own" : "bubble-other"}`}>
+        <p className="whitespace-pre-wrap">{content}</p>
+        {time && (
+          <span
+            className={`mt-0.5 block text-right font-mono text-[10px] tracking-wide ${
+              isOwn ? "text-white/65" : "text-paper-faint"
+            }`}
+          >
+            {time}
+          </span>
+        )}
       </div>
     </div>
   );

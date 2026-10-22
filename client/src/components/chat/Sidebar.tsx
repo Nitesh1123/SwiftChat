@@ -1,8 +1,19 @@
 import '@/styles.css'
 import { useUser } from "@/context/useUser";
+import type { CSSProperties } from "react";
+import { Bookmark, CircleDashed, LogOut, MessageSquare, Settings, Users } from "lucide-react";
+import Seal from "@/components/brand/Seal";
+import Avatar from "./Avatar";
 
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+const railItems = [
+  { label: "Chats", icon: MessageSquare, active: true },
+  { label: "Groups", icon: Users },
+  { label: "Status", icon: CircleDashed },
+  { label: "Saved", icon: Bookmark },
+];
 
 const Sidebar = () => {
   const { user, logout } = useUser();
@@ -32,53 +43,63 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-2 gap-4 justify-between pb-4 pt-4">
-      {/* Profile Avatar */}
-      <div className="relative" ref={menuRef}>
-        <button
-          onClick={() => setShowProfileMenu(!showProfileMenu)}
-          className="profile-img h-[45px] w-[45px] bg-white rounded-full overflow-hidden hover:opacity-80 transition-opacity"
-          aria-label="Profile menu"
-        >
-          {user?.avatar ? (
-            <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-primary text-lg font-semibold">
-              {user?.name?.[0]?.toUpperCase() || "U"}
-            </div>
-          )}
+    <nav className="rail flex flex-col items-center justify-between py-5" aria-label="Primary">
+      <Seal size={40} animate />
+
+      {/* Section switcher */}
+      <div className="flex flex-col items-center gap-2">
+        {railItems.map(({ label, icon: Icon, active }, i) => (
+          <button
+            key={label}
+            type="button"
+            title={label}
+            aria-label={label}
+            aria-current={active ? "page" : undefined}
+            className={`rail-btn reveal-x ${active ? "active" : ""}`}
+            style={{ "--i": i, "--base": "250ms" } as CSSProperties}
+          >
+            <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
+          </button>
+        ))}
+      </div>
+
+      <div className="flex flex-col items-center gap-3">
+        <button type="button" title="Settings" aria-label="Settings" className="rail-btn">
+          <Settings size={20} strokeWidth={1.8} />
         </button>
 
-        {showProfileMenu && (
-          <div className="absolute left-full ml-2 top-0 w-48 bg-[#252A31] border border-[#30363D] rounded-lg shadow-lg overflow-hidden z-50">
-            <div className="px-4 py-3 border-b border-[#30363D]">
-              <p className="text-sm font-medium text-white">{user?.name}</p>
-              <p className="text-xs text-[#8B95A7]">{user?.email}</p>
+        {/* Profile Avatar */}
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            className="block rounded-[30%] transition-opacity hover:opacity-85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-shu"
+            aria-label="Profile menu"
+          >
+            <Avatar name={user?.name || "U"} src={user?.avatar} size={40} online />
+          </button>
+
+          {showProfileMenu && (
+            <div className="menu-panel absolute bottom-0 left-full z-50 ml-3 w-60 overflow-hidden">
+              <div className="flex items-center gap-3 border-b border-paper/[0.08] px-4 py-3.5">
+                <Avatar name={user?.name || "U"} src={user?.avatar} size={36} />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">{user?.name}</p>
+                  <p className="truncate font-mono text-[11px] text-paper-faint">
+                    {user?.username ? `@${user.username}` : user?.email}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="flex w-full items-center gap-2.5 px-4 py-3 text-left text-sm text-shu transition-colors hover:bg-shu/10"
+              >
+                <LogOut size={15} /> Log out
+              </button>
             </div>
-            <button
-              onClick={handleLogout}
-              className="w-full px-4 py-3 text-left text-sm text-red-400 hover:bg-white/5 transition-colors"
-            >
-              Logout
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-
-      {/* Sidebar Items - Placeholder icons */}
-      <div className="sidebar-items flex flex-col gap-4 mb-[50px]">
-        <div className="sidebar-item rounded-full bg-white h-[45px] w-[45px]"></div>
-        <div className="sidebar-item rounded-full bg-white h-[45px] w-[45px]"></div>
-        <div className="sidebar-item rounded-full bg-white h-[45px] w-[45px]"></div>
-        <div className="sidebar-item rounded-full bg-white h-[45px] w-[45px]"></div>
-        <div className="sidebar-item rounded-full bg-white h-[45px] w-[45px]"></div>
-      </div>
-
-      {/* Settings */}
-      <div className="settings">
-        <div className="sidebar-item rounded-full bg-white h-[45px] w-[45px]"></div>
-      </div>
-    </div>
+    </nav>
   )
 }
 
