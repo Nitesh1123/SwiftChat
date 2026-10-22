@@ -6,7 +6,7 @@ import { SendHorizontal } from "lucide-react";
 
 const SendMessage = () => {
 
-    const { selectedConversation } = useConversation();
+    const { selectedConversation, receiveMessage } = useConversation();
     const [message, setMessage] = useState("");
     const handleSend = async () => {
         if (!message.trim()) {
@@ -17,11 +17,13 @@ const SendMessage = () => {
             return;
         }
         try {
-            await sendMessage({
+            const sent = await sendMessage({
                 conversationId: selectedConversation._id,
                 content: message,
             });
             setMessage("");
+            // Show it immediately rather than waiting for the socket echo.
+            if (sent) receiveMessage(sent);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : null;
 
