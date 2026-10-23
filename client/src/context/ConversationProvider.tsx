@@ -1,3 +1,4 @@
+import { fetchConversations } from "@/api/conversations";
 import { socket } from "@/lib/socket";
 import type { Conversation } from "@/types/conversation.types";
 import type { MessageResponse } from "@/types/message.types";
@@ -34,6 +35,8 @@ export const ConversationProvider = ({ children }: { children: ReactNode }) => {
 
   const prevConversationIdRef = useRef<string | null>(null);
   const selectedConversationRef = useRef<Conversation | null>(null);
+  const conversationsRef = useRef<Conversation[]>([]);
+  conversationsRef.current = conversations;
 
   const setSelectedConversation = (conversation: Conversation | null) => {
     selectedConversationRef.current = conversation;
@@ -80,6 +83,16 @@ export const ConversationProvider = ({ children }: { children: ReactNode }) => {
         if (prev.some((m) => m.id === message.id)) return prev;
         return [...prev, message];
       });
+    }
+
+    // A message for a chat we don't have yet means someone just started one
+    // with us; reload the list so it shows up (it arrives with this message
+    // already as its preview).
+    if (!conversationsRef.current.some((c) => c._id === message.conversationId)) {
+      fetchConversations()
+        .then(setConversations)
+        .catch((error) => console.error("Failed to refresh conversations:", error));
+      return;
     }
 
     // Keep the conversation list preview current and float it to the top.

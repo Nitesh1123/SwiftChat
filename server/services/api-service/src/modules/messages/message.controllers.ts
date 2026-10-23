@@ -21,7 +21,7 @@ export const sendMessage = async (req: AuthRequest, res: Response, next: NextFun
     }
 
     console.time("DB_Query_Time");
-    const message = await sendMessageService({
+    const { message, participantIds } = await sendMessageService({
       conversationId,
       senderId: userId,
       content,
@@ -39,7 +39,9 @@ export const sendMessage = async (req: AuthRequest, res: Response, next: NextFun
     // Because Kafka consumer is currently bypassed, we directly publish to Redis so sockets receive it
     try {
       const pubPayload = {
-        room: `conversation:${conversationId}`,
+        // Every socket joins a room named after its userId on connect, so this
+        // reaches participants whether or not they have this chat open.
+        room: participantIds,
         event: "message:new",
         data: message
       };

@@ -73,7 +73,12 @@ export const sendMessageService = async ({
     data: { lastMessageId: messageId }
   });
 
-  return formatMessage(savedMessage);
+  // Participants are returned so the caller can notify each one's personal
+  // room, which reaches them even when they haven't opened this conversation.
+  return {
+    message: formatMessage(savedMessage),
+    participantIds: conversation.participants.map((p) => p.userId),
+  };
 };
 
 export const fetchMessagesService = async ({
