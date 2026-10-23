@@ -1,368 +1,148 @@
-# 🚀 SwiftChat – Chat Application 
+# SwiftChat
 
-A scalable, production-ready chat backend built with **Node.js, Express, TypeScript, and MongoDB**, designed using clean architecture principles and industry-standard messaging patterns.
+A real-time chat app with direct messages, group chats and online status, built with React, Node.js, Socket.IO, PostgreSQL and Redis.
 
-This README documents **all the work completed so far**, the **design decisions**, and **flow diagrams** to clearly explain how the system works.
+**Live demo:** https://swiftchat-app-nine.vercel.app
 
+The backend runs on Render's free tier, so the first request after a quiet period can take 30 to 60 seconds while the server wakes up.
 
-## 📌 Features Implemented (So Far)
+## What it does
 
-✅ JWT-based Authentication (protected routes)
+- Sign up and log in with email and password
+- Search for people and start a one-to-one chat, or create a group
+- Messages arrive instantly for everyone in the chat, including people who haven't opened it yet
+- See who is online and when someone was last seen, correctly across several open tabs
+- Unread counts per conversation
+- Message history is saved, and the API can return it in pages (`?limit=&before=`)
 
-✅ Conversations
+## How it works
 
-* 1:1 (DM) conversations
-* Group conversations
-* Group admins support
+The backend is split into small services that talk to each other through Redis.
 
-✅ Messages
+```mermaid
+flowchart LR
+    browser["Browser<br/>(React app on Vercel)"]
+    api["api-service<br/>Express REST API"]
+    socket["socket-service<br/>Socket.IO"]
+    pg[("PostgreSQL<br/>Neon")]
+    redis[("Redis<br/>Upstash")]
 
-* Send messages
-* Fetch messages with pagination
-* Conversation-level lastMessage tracking
-
-✅ Unread Message System (Industry Standard)
-
-* Per-user read tracking
-* Unread count per conversation
-* Works for DM and Group chats
-* Pagination-safe
-
-
-## 🧱 Core Data Models
-
-### 1️⃣ User
-
-Stores basic user details (name, avatar, etc.).
-
-
-### 2️⃣ Conversation
-
-Represents a chat (DM or Group).
-
-**Key Fields:**
-
-* `type`: `dm | group`
-* `participants`: User IDs
-* `admins`: User IDs (group only)
-* `lastMessage`: Message ID
-
-
-### 3️⃣ Message
-
-Represents a single chat message.
-
-**Key Fields:**
-
-* `conversationId`
-* `sender`
-* `content`
-* `type` (text / image / file)
-* `createdAt`
-
-Messages are **immutable**.
-
-
-### 4️⃣ ConversationRead (MOST IMPORTANT)
-
-Tracks read state **per user per conversation**.
-
-**Meaning:**
-
-> For a given user and conversation, what is the **last message the user has read**?
-
-**Key Fields:**
-
-* `conversationId`
-* `userId`
-* `lastReadMessageId`
-
-This model enables scalable unread message logic.
-
-
-## 🧠 Core Design Principle (Unread Messages)
-
-❌ Messages are NOT individually marked as read
-
-✅ Each user maintains a **read pointer** (bookmark) per conversation
-
-A message is considered **read** if:
-
-```
-message._id <= lastReadMessageId
+    browser -- "/api requests" --> api
+    browser -- "WebSocket" --> socket
+    api --> pg
+    api -- "publish events" --> redis
+    redis -- "subscribe" --> socket
+    socket --> pg
 ```
 
-Unread messages are **derived**, not stored.
+When you send a message:
 
+1. The browser sends `POST /api/messages` to the API.
+2. The API checks that you belong to the conversation, saves the message in PostgreSQL and returns it to you.
+3. The API publishes a `message:new` event to Redis, addressed to every participant.
+4. Each socket-service instance is subscribed to Redis. It receives the event and pushes it to those users' open connections.
+5. The receiving browser adds the message to the chat. If the chat is new to them, it reloads the conversation list so the chat appears.
 
-## 🔁 Flow Diagrams
+Because events travel through Redis, you can run several socket-service instances and a user on one instance can still chat with a user on another.
 
-### 1️⃣ Send Message Flow
+**Optional Kafka path.** The repo also has a `consumer-service` and a Kafka setup in `docker-compose.production.yml`. With `KAFKA_BROKERS` set, the API also puts messages on a Kafka topic for the consumer to process, which helps absorb heavy write traffic. The live deployment runs without Kafka.
 
-```
-User
-  │
-  ▼
-Auth Middleware
-  │
-  ▼
-sendMessageService
-  │
-  ├─ Validate conversation
-  ├─ Validate participant
-  │
-  ▼
-Create Message
-  │
-  ▼
-Update Conversation.lastMessage
-  │
-  ▼
-Return message
-```
+## Authentication
 
-📌 Note:
+- Passwords are hashed with bcrypt.
+- Logging in sets two HTTP-only cookies: an access token that lasts 15 minutes and a refresh token that lasts 7 days. JavaScript on the page can't read them.
+- When the access token expires, the frontend calls `/api/auth/refresh-token` once and retries the request. Refresh tokens are stored on the user and replaced on every refresh, so logging out ends the session.
+- In production the frontend calls `/api` on its own domain and Vercel forwards those requests to the API on Render. This keeps the cookies first-party, since most browsers now block cookies from a different site.
+- The WebSocket lives on a different domain, so before connecting the browser fetches a short-lived token from `/api/auth/socket-token` and sends it in the handshake.
 
-* No unread state updated here
-* Message writes stay fast
+There are no app-wide roles; every account is a normal user. In group chats the creator is recorded as the group admin.
 
+## Tech stack
 
-### 2️⃣ Fetch Messages (Mark as Read Flow)
+| Area | Tools |
+| --- | --- |
+| Frontend | React 19, Vite, TypeScript, Tailwind CSS, Radix UI, React Router, React Hook Form + Zod, Axios, socket.io-client |
+| API | Node.js 20, Express 5, Prisma, JSON Web Tokens, bcrypt, Joi, helmet |
+| Real-time | Socket.IO with the Redis adapter, ioredis |
+| Data | PostgreSQL (Neon), Redis (Upstash) |
+| Optional queue | Kafka (kafkajs) |
+| Hosting | Vercel (frontend), Render with Docker (API and socket server) |
+
+## Project structure
 
 ```
-User opens chat
-  │
-  ▼
-GET /messages/:conversationId
-  │
-  ▼
-fetchMessagesService
-  │
-  ├─ Validate conversation & participant
-  │
-  ▼
-Fetch messages (paginated)
-  │
-  ▼
-Find ConversationRead
-  │   ├─ If not exists → create
-  │
-  ▼
-Update lastReadMessageId (latest message)
-  │
-  ▼
-Return messages
+client/                      React frontend
+server/
+  services/
+    api-service/             REST API: auth, users, conversations, messages
+    socket-service/          WebSocket server: live delivery and presence
+    consumer-service/        Kafka consumer (only used when Kafka is on)
+  packages/
+    prisma/                  Database schema, migrations and shared client
+    redis/                   Shared Redis clients and pub/sub helpers
+    kafka/                   Shared Kafka producer and consumer
+    types/                   Types shared between services
+  Dockerfile                 One image used by every service
+  docker-compose.production.yml   Full stack on one machine, including Kafka and nginx
 ```
 
-📌 This is the **only place** where messages are marked as read.
+The server is an npm workspace, so all services share the packages under `server/packages`.
 
+## Running it locally
 
-### 3️⃣ Fetch Conversations (Unread Count Flow)
+You need Node.js 20 or later, a PostgreSQL database and a Redis instance. Free Neon and Upstash accounts work.
 
-```
-User opens chat list
-  │
-  ▼
-GET /conversations
-  │
-  ▼
-getConversationsService
-  │
-  ▼
-Fetch all user conversations
-  │
-  ▼
-For each conversation:
-  │
-  ├─ Get ConversationRead
-  ├─ Build unread query
-  │     ├─ Same conversation
-  │     ├─ Sender != user
-  │     └─ Message > lastReadMessageId
-  │
-  ▼
-Count unread messages
-  │
-  ▼
-Attach unreadCount
-  │
-  ▼
-Return conversation list
-```
+**1. Backend**
 
-
-## 🧩 Data Relationship Diagram
+Create `server/services/api-service/.env` and `server/services/socket-service/.env`:
 
 ```
-User
-  │
-  ▼
-Conversation
-  │
-  ▼
-Message
-  ▲
-  │
-ConversationRead
+DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
+REDIS_URL=rediss://default:password@host:6379
+ACCESS_TOKEN_SECRET=any-long-random-string
+REFRESH_TOKEN_SECRET=another-long-random-string
 ```
 
-* `Conversation` is shared
-* `Message` is immutable
-* `ConversationRead` is user-specific
+Leave `KAFKA_BROKERS` unset unless you are running Kafka.
 
-
-## 📊 Unread Count Formula
-
-```
-Unread Messages =
-  Messages where:
-    - conversationId matches
-    - sender != current user
-    - message._id > lastReadMessageId
+```bash
+cd server
+npm install
+npx prisma migrate deploy --schema=packages/prisma/schema.prisma
+npm run dev
 ```
 
-If `lastReadMessageId` is `null` → all messages from others are unread.
+The API listens on port 5000 and the socket server on port 8001.
 
+**2. Frontend**
 
-## 🧪 Example Timeline
-
-```
-A sends m1
-B sends m2
-B sends m3
-A opens chat → lastRead = m3
-B sends m4
-```
-
-Unread count for A:
+Create `client/.env`:
 
 ```
-1 (m4)
+VITE_API_BASE_URL=http://localhost:5000
+VITE_SOCKET_URL=http://localhost:8001
 ```
 
-Unread count for B:
-
-```
-0
-```
-
-
----
-
-## ⚡ Real-Time Messaging Architecture (Socket.IO)
-
-### Design Rules
-- REST APIs **create data**
-- Socket.IO **delivers events**
-- Clients never send messages via socket
-- Server emits socket events **after DB persistence**
-
----
-
-### 🏠 Socket Room Strategy
-
-#### Conversation Room
-```
-conversation:<conversationId>
-```
-Used for:
-- Real-time messages
-- Typing indicators (future)
-- Read receipts (future)
-
-Joined when:
-- User opens a conversation
-
-Left when:
-- User switches conversation
-
----
-
-#### User Room
-Used for:
-- Notifications
-- Unread updates
-- Presence (future)
-
-Joined on:
-- Socket connection
-
----
-
-### 🔁 Real-Time Message Flow
-
-#### Sender
-```
-Send message → REST API
-→ DB save
-→ REST response
-→ Sender UI updates immediately
+```bash
+cd client
+npm install
+npm run dev
 ```
 
-#### Receiver
-```
-socket.on("message:new")
-→ append message to state
-→ UI updates instantly
-```
-## ⚙️ Technical Highlights
+Open http://localhost:5173. The Vite dev server forwards `/api` to `VITE_API_BASE_URL`, the same way Vercel does in production.
 
-* Pagination-safe unread logic
-* No per-message read flags
-* One DB write per chat open
-* Works for DM & Group chats
-* Real-time messaging using Socket.IO
+## Deployment
 
+Pushing to `main` deploys everything:
 
-## 🔜 Next Planned Steps
+- **Vercel** builds `client/` and serves it. `client/vercel.json` forwards `/api/*` to the Render API and sends every other path to `index.html`.
+- **Render** builds `server/Dockerfile` twice, once per service. The API starts with `tsx services/api-service/src/server.ts` and the socket server with `tsx services/socket-service/src/server.ts`. Each needs the environment variables listed above.
 
-* Real-time unread updates
-* Aggregation-based unread optimization
-* Read receipts ("Seen by X")
-* Group admin permissions
+To run the whole system on a single server instead, including Kafka and the consumer, use `deploy.sh`. It starts `server/docker-compose.production.yml` behind nginx.
 
+## Known limitations
 
-## 🏁 Conclusion
-
-This backend implements an **industry-grade chat architecture** similar to WhatsApp / Slack:
-
-* Clean separation of concerns
-* Scalable unread message design
-* With real-time features
-
-
-## 🎨 Frontend – Work Completed So Far
-
-### 🔐 Authentication UI
-
-
-### 🔗 Frontend ↔ Backend Integration
-
-Frontend does **not** access refresh tokens directly.
-
-
-### 🧠 Frontend Architecture
-
-
-## ⚙️ Technical Highlights
-
-
-
-## 🔜 Next Planned Steps
-
-### Backend
-- Socket.IO real-time messaging
-- Redis-backed unread optimization
-- Read receipts (“Seen by”)
-- Group permission enforcement
-
-### Frontend
-
-
-## 🏁 Conclusion
-
-SwiftChat implements an **industry-grade chat architecture** with:
-
-
-
-👨‍💻 Built as part of the **SwiftChat Project**
+- Group admins are recorded, but there are no admin actions yet, such as adding or removing members.
+- Typing indicators and live read receipts aren't built yet. The database already tracks which messages each user has read.
+- Image and file messages are in the schema but not in the interface.
+- With Kafka turned on, the API and the consumer both save each message, so that path needs an idempotent write before it is used.
