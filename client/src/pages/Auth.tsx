@@ -3,7 +3,7 @@ import CardForms from "@/components/auth/CardForms";
 import "@/styles.css";
 import CardNav from "@/components/auth/CardNav";
 import CardHero from "@/components/auth/CardHero";
-import Seal from "@/components/brand/Seal";
+import Logo from "@/components/brand/Logo";
 
 const at = (i: number, base = 0) => ({ "--i": i, "--base": `${base}ms` }) as CSSProperties;
 
@@ -18,7 +18,7 @@ const Auth = () => {
       {/* Brand column */}
       <aside className="relative flex flex-col justify-between gap-8 px-5 pt-6 pb-2 sm:px-10 lg:px-16 lg:py-12">
         <div className="flex items-center gap-3">
-          <Seal size={38} animate />
+          <Logo size={38} animate />
           <span className="reveal text-lg font-semibold tracking-tight" style={at(1, 200)}>
             SwiftChat
           </span>

@@ -1,6 +1,6 @@
-import { MessageSquare, Users, Circle, Settings } from "lucide-react";
+import { MessageSquare, Users, LayoutDashboard, Settings } from "lucide-react";
 
-type TabType = "chats" | "groups" | "status" | "settings";
+export type TabType = "chats" | "overview" | "groups" | "settings";
 
 interface MobileBottomNavProps {
   activeTab: TabType;
@@ -10,8 +10,8 @@ interface MobileBottomNavProps {
 const MobileBottomNav = ({ activeTab, onTabChange }: MobileBottomNavProps) => {
   const tabs: { id: TabType; label: string; icon: typeof MessageSquare }[] = [
     { id: "chats", label: "Chats", icon: MessageSquare },
+    { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "groups", label: "Groups", icon: Users },
-    { id: "status", label: "Status", icon: Circle },
     { id: "settings", label: "Settings", icon: Settings },
   ];
 

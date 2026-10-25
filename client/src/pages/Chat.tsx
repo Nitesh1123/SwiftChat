@@ -1,20 +1,20 @@
 import {fetchConversations} from "@/api/conversations";
 import ChatArea from "@/components/chat/ChatArea";
 import ChatList from "@/components/chat/ChatList";
-import Sidebar from "@/components/chat/Sidebar";
-import MobileBottomNav from "@/components/chat/MobileBottomNav";
+import Sidebar, {type DesktopView} from "@/components/chat/Sidebar";
+import MobileBottomNav, {type TabType} from "@/components/chat/MobileBottomNav";
 import UsernameDialog from "@/components/chat/UsernameDialog";
+import Dashboard from "@/components/dashboard/Dashboard";
 import {useUser} from "@/context/useUser";
 import "@/styles.css";
 import {useEffect, useState} from "react";
 import {useConversation} from "@/context/useConversation.ts";
 
-type TabType = "chats" | "groups" | "status" | "settings";
-
 const Chat = () => {
-    const {setConversations, selectedConversation, setSelectedConversation} = useConversation();
+    const {conversations, setConversations, selectedConversation, setSelectedConversation} = useConversation();
     const {user} = useUser();
     const [activeTab, setActiveTab] = useState<TabType>("chats");
+    const [desktopView, setDesktopView] = useState<DesktopView>("chats");
     const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
     const [usernameDialogOpen, setUsernameDialogOpen] = useState(false);
 
@@ -65,6 +65,20 @@ const Chat = () => {
         setIsMobileChatOpen(false);
     };
 
+    // Jump from the dashboard straight into a conversation.
+    const openConversation = async (conversationId: string) => {
+        let list = conversations;
+        if (!list.some((c) => c._id === conversationId)) {
+            list = await fetchConversations().catch(() => list);
+            setConversations(list);
+        }
+        const target = list.find((c) => c._id === conversationId);
+        if (!target) return;
+        setSelectedConversation(target);
+        setDesktopView("chats");
+        setActiveTab("chats");
+    };
+
     return (
         <div className="main atmosphere relative h-dvh w-screen overflow-hidden">
             {/* Username Dialog - Show globally when username is not set */}
@@ -72,11 +86,15 @@ const Chat = () => {
             
             {/* Desktop Layout (≥1024px) */}
             <div className="hidden lg:grid lg:grid-cols-[76px_1fr] h-full">
-                <Sidebar/>
-                <div className="chat flex overflow-hidden w-full h-full">
-                    <ChatList/>
-                    <ChatArea/>
-                </div>
+                <Sidebar view={desktopView} onViewChange={setDesktopView}/>
+                {desktopView === "overview" ? (
+                    <Dashboard onOpenConversation={openConversation}/>
+                ) : (
+                    <div className="chat flex overflow-hidden w-full h-full">
+                        <ChatList/>
+                        <ChatArea/>
+                    </div>
+                )}
             </div>
 
             {/* Mobile/Tablet Layout (<1024px) */}
@@ -115,15 +133,9 @@ const Chat = () => {
                     </div>
                 )}
 
-                {/* Status Tab Content (Stub) */}
-                {activeTab === "status" && (
-                    <div className="flex h-full items-center justify-center px-8">
-                        <div className="reveal text-center">
-                            <p className="eyebrow">{"status"}</p>
-                            <p className="mt-3 font-display text-4xl leading-none">Coming soon.</p>
-                            <p className="mt-3 text-sm text-paper-dim">{"Status feature coming soon"}</p>
-                        </div>
-                    </div>
+                {/* Overview Tab Content */}
+                {activeTab === "overview" && (
+                    <Dashboard onOpenConversation={openConversation}/>
                 )}
 
                 {/* Settings Tab Content (Stub) */}

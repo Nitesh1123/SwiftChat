@@ -1,21 +1,29 @@
 import '@/styles.css'
 import { useUser } from "@/context/useUser";
 import type { CSSProperties } from "react";
-import { Bookmark, CircleDashed, LogOut, MessageSquare, Settings, Users } from "lucide-react";
-import Seal from "@/components/brand/Seal";
+import { Bookmark, LayoutDashboard, LogOut, MessageSquare, Settings, Users } from "lucide-react";
+import Logo from "@/components/brand/Logo";
 import Avatar from "./Avatar";
 
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const railItems = [
-  { label: "Chats", icon: MessageSquare, active: true },
+export type DesktopView = "chats" | "overview";
+
+// Items with a `view` switch the main pane; the rest are placeholders.
+const railItems: { label: string; icon: typeof MessageSquare; view?: DesktopView }[] = [
+  { label: "Chats", icon: MessageSquare, view: "chats" },
+  { label: "Overview", icon: LayoutDashboard, view: "overview" },
   { label: "Groups", icon: Users },
-  { label: "Status", icon: CircleDashed },
   { label: "Saved", icon: Bookmark },
 ];
 
-const Sidebar = () => {
+interface SidebarProps {
+  view: DesktopView;
+  onViewChange: (view: DesktopView) => void;
+}
+
+const Sidebar = ({ view, onViewChange }: SidebarProps) => {
   const { user, logout } = useUser();
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -44,11 +52,13 @@ const Sidebar = () => {
 
   return (
     <nav className="rail flex flex-col items-center justify-between py-5" aria-label="Primary">
-      <Seal size={40} animate />
+      <Logo size={40} animate />
 
       {/* Section switcher */}
       <div className="flex flex-col items-center gap-2">
-        {railItems.map(({ label, icon: Icon, active }, i) => (
+        {railItems.map(({ label, icon: Icon, view: target }, i) => {
+          const active = target === view;
+          return (
           <button
             key={label}
             type="button"
@@ -57,10 +67,12 @@ const Sidebar = () => {
             aria-current={active ? "page" : undefined}
             className={`rail-btn reveal-x ${active ? "active" : ""}`}
             style={{ "--i": i, "--base": "250ms" } as CSSProperties}
+            onClick={() => target && onViewChange(target)}
           >
             <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
           </button>
-        ))}
+          );
+        })}
       </div>
 
       <div className="flex flex-col items-center gap-3">

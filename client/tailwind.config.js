@@ -33,6 +33,7 @@ export default {
         sora: "rgb(var(--sora) / <alpha-value>)",
         matcha: "rgb(var(--matcha) / <alpha-value>)",
         kaki: "rgb(var(--kaki) / <alpha-value>)",
+        ai: "rgb(var(--ai) / <alpha-value>)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

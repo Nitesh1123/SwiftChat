@@ -15,10 +15,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.font-seal {
-  font-family: "Shippori Mincho", "Instrument Serif", serif;
-}
-
 /* ---------- Atmosphere: glow + shippo rings + grain ---------- */
 
 .atmosphere {
@@ -96,15 +92,15 @@ body {
 @keyframes stamp {
   0% {
     opacity: 0;
-    transform: scale(1.8) rotate(-18deg);
+    transform: scale(0.4) rotate(-12deg);
   }
   60% {
     opacity: 1;
-    transform: scale(0.94) rotate(-3deg);
+    transform: scale(1.08) rotate(2deg);
   }
   100% {
     opacity: 1;
-    transform: scale(1) rotate(-5deg);
+    transform: none;
   }
 }
 
@@ -180,24 +176,13 @@ body {
   }
 }
 
-/* ---------- Brand seal ---------- */
+/* ---------- Brand mark ---------- */
 
-.seal {
-  display: grid;
-  place-items: center;
+.logo-mark {
+  display: block;
   flex-shrink: 0;
-  border-radius: 22%;
-  background:
-    radial-gradient(circle at 30% 25%, rgb(255 255 255 / 0.18), transparent 55%),
-    rgb(var(--shu));
-  color: rgb(var(--ink-0));
-  box-shadow:
-    inset 0 0 0 2px rgb(var(--ink-0) / 0.25),
-    inset 0 0 0 4px rgb(var(--shu)),
-    inset 0 0 0 5px rgb(var(--ink-0) / 0.35),
-    0 10px 30px -8px rgb(var(--shu) / 0.55);
-  transform: rotate(-5deg);
-  line-height: 1;
+  border-radius: 29%;
+  box-shadow: 0 10px 28px -10px rgb(var(--shu) / 0.6);
 }
 
 /* Hairline that draws itself across */
@@ -755,4 +740,112 @@ body {
 .thin-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgb(var(--paper) / 0.12) transparent;
+}
+
+/* ---------- Dashboard ---------- */
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 20px;
+  background: linear-gradient(180deg, rgb(var(--ink-2) / 0.7), rgb(var(--ink-1) / 0.55));
+  box-shadow: 0 1px 0 rgb(var(--paper) / 0.04) inset;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+@media (min-width: 640px) {
+  .panel {
+    padding: 22px 24px;
+  }
+}
+
+/* Segmented control (range, chart/table) */
+.seg {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 11px;
+  border: 1px solid var(--line);
+  background: rgb(var(--ink-0) / 0.6);
+}
+
+.seg button {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: rgb(var(--paper-faint));
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.seg button:hover {
+  color: rgb(var(--paper));
+}
+
+.seg button.on {
+  color: rgb(var(--paper));
+  background: rgb(var(--ink-3));
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.chart-tooltip {
+  position: absolute;
+  z-index: 5;
+  min-width: 150px;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  background: rgb(var(--ink-0) / 0.94);
+  box-shadow: 0 16px 34px -14px rgb(0 0 0 / 0.8);
+}
+
+.heat-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.heat-cell[data-active="true"] {
+  transform: scale(1.25);
+  box-shadow: 0 0 0 1.5px rgb(var(--paper) / 0.8);
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.bar-grow {
+  transform-origin: left;
+  animation: bar-grow 0.8s var(--ease-out) 0.5s both;
+}
+
+/* The series line draws itself in once, as part of the page's entrance */
+.chart-series path:last-child {
+  stroke-dasharray: 4000;
+  animation: draw-line 1.4s var(--ease-out) 0.35s both;
+}
+
+@keyframes draw-line {
+  from {
+    stroke-dashoffset: 4000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar-grow,
+  .chart-series path:last-child {
+    animation: none !important;
+  }
 }
