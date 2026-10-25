@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /*
- * Sumi — ink-black base, one vermilion (shu) accent like a hanko seal,
+ * Sumi — ink-black base, one vermilion (shu) accent,
  * paper-white type. Raw tokens are RGB triplets so Tailwind can apply alpha.
  */
 @layer base {
@@ -20,6 +20,9 @@
     --sora: 126 156 216;
     --matcha: 152 187 108;
     --kaki: 230 180 92;
+    /* Chart series: sent = shu, received = ai (indigo). Validated as a pair
+       against the ink-1 surface for lightness, chroma, CVD and contrast. */
+    --ai: 91 141 239;
     --line: rgb(var(--paper) / 0.08);
     --line-strong: rgb(var(--paper) / 0.14);
     --ease-out: cubic-bezier(0.2, 0.75, 0.15, 1);

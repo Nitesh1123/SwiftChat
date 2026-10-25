@@ -2,7 +2,7 @@ import { useUser } from "@/context/useUser";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { setUsername } from "@/api/user";
-import Seal from "@/components/brand/Seal";
+import Logo from "@/components/brand/Logo";
 
 interface UsernameDialogProps {
   open: boolean;
@@ -66,7 +66,7 @@ const UsernameDialog = ({ open, setOpen }: UsernameDialogProps) => {
         aria-labelledby="username-title"
         className="dialog-panel relative z-10 w-full max-w-md rounded-3xl p-6 sm:p-8"
       >
-        <Seal size={44} animate delay={200} />
+        <Logo size={44} animate delay={200} />
         <p className="eyebrow mt-6">One last thing</p>
         <h2 id="username-title" className="mt-2 mb-2 font-display text-[2.2rem] leading-none">
           Set your username

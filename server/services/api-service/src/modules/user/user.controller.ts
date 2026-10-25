@@ -1,6 +1,7 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/authMiddleware";
 import { getUsers, setUserNameService } from "./user.service";
+import { getUserStatsService } from "./user.stats.service";
 
 export const setUserName = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -77,6 +78,32 @@ export const searchUsers = async (req: AuthRequest, res: Response, next: NextFun
 
   } catch (error: any) {
     console.error("Search users error:", error);
+    next(error);
+  }
+}
+
+const STATS_RANGES = [7, 30, 90];
+
+export const getUserStats = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const requestedDays = Number(req.query.days);
+    const days = STATS_RANGES.includes(requestedDays) ? requestedDays : 30;
+    // Browser's getTimezoneOffset(): minutes behind UTC (real range -840..720).
+    const rawOffset = Number(req.query.tz);
+    const tzOffset = Number.isFinite(rawOffset)
+      ? Math.max(-840, Math.min(840, Math.round(rawOffset)))
+      : 0;
+
+    const stats = await getUserStatsService({ userId, days, tzOffset });
+
+    return res.status(200).json({ success: true, data: stats });
+  } catch (error: any) {
+    console.error("User stats error:", error);
     next(error);
   }
 }

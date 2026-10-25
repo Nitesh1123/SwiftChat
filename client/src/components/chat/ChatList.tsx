@@ -3,7 +3,7 @@ import "@/styles.css";
 import { Search } from "lucide-react";
 import ChatItems from "./ChatItems";
 import NewConversationBtn from "@/components/chat/NewConversationBtn";
-import Seal from "@/components/brand/Seal";
+import Logo from "@/components/brand/Logo";
 import { useConversation } from "@/context/useConversation";
 
 interface ChatListProps {
@@ -19,7 +19,7 @@ const ChatList = ({ onChatSelect }: ChatListProps) => {
 
             <header className="flex items-end justify-between px-2">
                 <div className="flex items-center gap-3">
-                    <span className="lg:hidden"><Seal size={30} /></span>
+                    <span className="lg:hidden"><Logo size={30} /></span>
                     <h1 className="reveal font-display text-[2.25rem] leading-none tracking-tight">Messages</h1>
                 </div>
                 <span className="reveal eyebrow pb-1" style={{ "--i": 1 } as CSSProperties}>
